@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, FlatList, SafeAreaView, Text, StyleSheet, StatusBar } from 'react-native';
+import { FlatList, SafeAreaView, Text, StyleSheet, StatusBar, TouchableOpacity } from 'react-native';
 
 import api from './services/api';
 
@@ -14,16 +14,21 @@ export default function App() {
         });
     }, []);
 
+    async function handleAddProject() {
+        const response = await api.post('projects', {
+            title: `Novo projeto ${Date.now()}`,
+            owner: 'Júlia D. Craide'
+        });
+
+        const project = response.data;
+
+        setProjects([...projects, project]);
+    }
+
     return (
         <>
             <StatusBar barStyle="light-content" backgroundColor="#7159c1" />
 
-            {/* <View style={styles.container} >
-                <Text style={styles.title}>Projetos:</Text>
-                {projects.map(project =>
-                    <Text key={project.id} style={styles.project}>{project.title}</Text>
-                )}
-            </View> */}
             <SafeAreaView style={styles.container}>
                 <Text style={styles.title}>Projetos:</Text>
                 <FlatList
@@ -33,6 +38,13 @@ export default function App() {
                         <Text style={styles.project}>{project.title}</Text>
                     )}
                 />
+                <TouchableOpacity
+                    activeOpacity={0.6}
+                    style={styles.button}
+                    onPress={handleAddProject}
+                >
+                    <Text style={styles.buttonText}>Adicionar projeto</Text>
+                </TouchableOpacity>
             </SafeAreaView>
         </>
     );
@@ -42,16 +54,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#7159c1',
-        // justifyContent: 'center',
-        // alignItems: 'center',
     },
     title: {
         color: '#FFF',
-        fontSize: 52,
+        fontSize: 32,
         fontWeight: 'bold',
     },
     project: {
         color: '#FFF',
-        fontSize: 40,
+        fontSize: 20,
     },
+    button: {
+        alignSelf: 'stretch',
+        backgroundColor: '#fff',
+        margin: 20,
+        height: 50,
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        fontWeight: 'bold',
+        fontSize: 16
+    }
 })
